@@ -1,0 +1,1 @@
+The user wants to upload the website to GitHub and requires all necessary files in a zip format. The website features a stopwatch with a timer and balance tracker. The balance increases when the start button is pressed and decreases when the pause button is pressed.

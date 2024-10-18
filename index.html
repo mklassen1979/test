@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stopwatch Website</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+  <style>
+    .stopwatch-container {
+      text-align: center;
+      margin: 50px auto;
+    }
+    #time, #balance {
+      font-size: 3rem;
+      font-weight: bold;
+    }
+    .buttons {
+      margin-top: 20px;
+    }
+    .buttons button {
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="container-fluid">
+    <ul>
+      <li><strong>Stopwatch</strong></li>
+    </ul>
+    <ul>
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Features</a></li>
+      <li><a href="#" role="button">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main class="container">
+    <div class="grid">
+      <section>
+        <hgroup>
+          <h2>Stopwatch with Balance</h2>
+          <h3>Track Time the Classic Way</h3>
+        </hgroup>
+        <p>This is a vintage-style stopwatch with a built-in timer and balance tracker you can start, stop, pause, and reset.</p>
+
+        <h3>Stopwatch Timer</h3>
+        <div class="stopwatch-container">
+          <div id="time">00:00:00</div>
+          <div id="balance">Balance: 00:00:00</div>
+          <div class="buttons">
+            <button id="startBtn">Start</button>
+            <button id="stopBtn">Stop</button>
+            <button id="pauseBtn">Pause</button>
+            <button id="resetBtn">Reset</button>
+          </div>
+        </div>
+
+        <h3>How It Works</h3>
+        <p>Click the start button to begin the stopwatch and increase the balance in sync. Click pause to decrease the balance, allowing it to go negative. Press start again to resume increasing the timer and balance positively. Use stop to pause everything, and reset to clear the time and balance.</p>
+      </section>
+    </div>
+  </main>
+
+  <section aria-label="Subscribe example">
+    <div class="container">
+      <article>
+        <hgroup>
+          <h2>Subscribe for Updates</h2>
+          <h3>Get the latest on classic stopwatches</h3>
+        </hgroup>
+        <form class="grid">
+          <input type="text" id="firstname" name="firstname" placeholder="Your first name" aria-label="First Name" required />
+          <input type="email" id="email" name="email" placeholder="Your email address" aria-label="Email" required />
+          <button type="submit" onclick="event.preventDefault()">Subscribe</button>
+        </form>
+      </article>
+    </div>
+  </section>
+
+  <footer class="container">
+    <small><a href="#">Privacy Policy</a> • <a href="#">Terms of Service</a></small>
+  </footer>
+
+  <script>
+    let startTime, balanceTime, interval, isPaused = false;
+    const timeDisplay = document.getElementById('time');
+    const balanceDisplay = document.getElementById('balance');
+    let balanceValue = 0;
+
+    document.getElementById('startBtn').addEventListener('click', () => {
+      stopTimer();
+      startTimer();
+    });
+    document.getElementById('stopBtn').addEventListener('click', stopTimer);
+    document.getElementById('pauseBtn').addEventListener('click', () => {
+      stopTimer();
+      pauseTimer();
+    });
+    document.getElementById('resetBtn').addEventListener('click', resetTimer);
+
+    function startTimer() {
+      if (!interval) {
+        if (isPaused) {
+          isPaused = false;
+        } else {
+          startTime = Date.now();
+        }
+        interval = setInterval(updateTime, 1000);
+      }
+    }
+
+    function stopTimer() {
+      clearInterval(interval);
+      interval = null;
+    }
+
+    function pauseTimer() {
+      isPaused = true;
+      clearInterval(interval);
+      interval = setInterval(updateBalanceDecrease, 1000);
+    }
+
+    function resetTimer() {
+      clearInterval(interval);
+      interval = null;
+      timeDisplay.textContent = "00:00:00";
+      balanceDisplay.textContent = "Balance: 00:00:00";
+      balanceValue = 0;
+      isPaused = false;
+    }
+
+    function updateTime() {
+      const elapsedTime = Date.now() - startTime;
+      const totalSeconds = Math.floor(elapsedTime / 1000);
+      const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+      const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+      const seconds = String(totalSeconds % 60).padStart(2, '0');
+      timeDisplay.textContent = `${hours}:${minutes}:${seconds}`;
+      updateBalance(1);
+    }
+
+    function updateBalance(change) {
+      balanceValue += change;
+      const absBalance = Math.abs(balanceValue);
+      const hours = String(Math.floor(absBalance / 3600)).padStart(2, '0');
+      const minutes = String(Math.floor((absBalance % 3600) / 60)).padStart(2, '0');
+      const seconds = String(absBalance % 60).padStart(2, '0');
+      const sign = balanceValue < 0 ? '-' : '';
+      balanceDisplay.textContent = `Balance: ${sign}${hours}:${minutes}:${seconds}`;
+    }
+
+    function updateBalanceDecrease() {
+      updateBalance(-1);
+    }
+  </script>
+</body>
+</html>
